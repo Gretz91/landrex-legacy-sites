@@ -33,7 +33,7 @@ Each site is a plain static folder at the repo root, deployable as-is (no build 
 | erin-ridge-north | erinridgenorth.ca | ✅ done, verified against live site |
 | ridgeview-at-the-quarry | ridgeviewatthequarry.ca | ✅ done, verified against live site |
 | windsor-pointe | windsorpointe.ca | ✅ done, verified against live site |
-| sherwood-golf-estates | sherwoodestates.ca | pending |
+| sherwood-golf-estates | sherwoodestates.ca | ✅ done, verified against live site |
 | east-pine | eastpine.ca | pending |
 | heritage-valley-estates | heritagevalleyestates.ca | pending |
 | westwinds | westwindsliving.ca | pending |
@@ -57,6 +57,11 @@ Documented in full in the Landrex project's `claude/legacy-sites-status.md` doc.
 6. Verify: no tracking/CMS leftovers, HTML parses cleanly, zero browser console/page errors, carousels actually paginate, screenshot comparison against the live site, test-submit the form with the honeypot filled.
 
 A CSS file with a *relative* `url(...)` reference (`../img/x.jpg`, `./fonts/y.woff`) needs that path resolved against the stylesheet's own URL, not the page's — and the asset's self-hosted path needs to be written back into the shipped CSS as a full absolute-URL match, not left as the original relative text, or it silently 404s in the browser even though the bundler fetched the right bytes. Caught and fixed in the bundler itself (`scripts/bundler.js`) on Windsor Pointe, where it broke Font Awesome's icon fonts and two background images.
+
+Two more generalizable lessons surfaced on Sherwood Golf Estates:
+
+- **Lazy-loaded images can be invisible to the bundler, not just mis-resolved.** Some WordPress lazy-load setups put the real URL in `data-lazy-src`/`data-src` (`<img>`) and `data-lazy-srcset`/`data-srcset` (`<source>`), leaving `src`/`srcset` pointing at a blank placeholder. The bundler's `img[src]` scan never sees the real URL at all. Fix: before calling `__bundleSite`, run a DOM pre-pass that copies `data-lazy-src`/`data-src` into `img.src` and `data-lazy-srcset`/`data-srcset` into `srcset`, for every element that has them — after which the bundler's existing collection logic picks up the real values with no bundler.js changes needed. This has not yet been folded into `bundler.js` as a standing step, so **remember to run it manually on every future site** (any WP site with a lazy-load plugin can hit this).
+- **`rewriteAll()`'s substring replace can "localize" a path that was never fetched.** The bundler never scans `<picture><source srcset>` at all, only `<img src>`. When a registered URL (the `<img>` fallback's `.jpg`/`.png`, which *was* fetched) is a literal text prefix of an unregistered sibling URL elsewhere in the page (a `.jpg.webp`/`.png.webp` variant in a `<source>`, which was *not* fetched), the plain `.split(v).join(local)` substitution still matches inside that longer string — producing a plausible-looking local path (`assets/images/x.jpg.webp`) for a file that doesn't exist on disk. Only caught via Playwright's `requestfailed` listener. Fixed per-site by stripping the orphaned `<source type="image/webp">` tags (the `<img>` fallback already renders correctly); **`bundler.js` itself still needs a permanent fix** — either collect+fetch `srcset` candidates, or make `rewriteAll` collision-safe against prefix matches — before the next `<picture>`/webp site.
 
 ## Deployment
 
