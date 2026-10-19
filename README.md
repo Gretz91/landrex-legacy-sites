@@ -19,6 +19,8 @@ Each site is a plain static folder at the repo root, deployable as-is (no build 
   assets/
     images/
     fonts/
+    docs/        (only if the site links to a PDF or similar, self-hosted alongside everything else)
+  vendor/        (only on sites that depend on a JS library like jQuery/Slick, self-hosted rather than pulled from a CDN)
 ```
 
 `index.html` references `style.css` and `assets/` with paths relative to its own folder, so each site is self-contained and can be opened directly or served from any static host.
@@ -28,7 +30,7 @@ Each site is a plain static folder at the repo root, deployable as-is (no build 
 | Slug | Original domain | Status |
 |---|---|---|
 | tanglewood-ridge | tanglewoodridge.com | ✅ done, verified against live site |
-| erin-ridge-north | erinridgenorth.ca | pending |
+| erin-ridge-north | erinridgenorth.ca | ✅ done, verified against live site |
 | ridgeview-at-the-quarry | ridgeviewatthequarry.ca | pending |
 | windsor-pointe | windsorpointe.ca | pending |
 | sherwood-golf-estates | sherwoodestates.ca | pending |
@@ -47,12 +49,12 @@ Excluded: `livefenwyck.com` (owned by Avillia Developments, not Landrex), `mail.
 
 Documented in full in the Landrex project's `claude/legacy-sites-status.md` doc. Short version per site:
 
-1. Capture the live page's DOM + only the CSS rules it actually uses ("critical CSS extraction"), self-host its images/fonts, and package as a bundle.
-2. Strip every script tied to the old CMS: Facebook Pixel, GTM/GA, jQuery, Elementor runtime, Gravity Forms. Remove the now-dead `<link>` tags pointing at the live wp-content assets.
+1. Capture the live page's DOM + only the CSS rules it actually uses ("critical CSS extraction"), self-host its images/fonts (and any linked PDFs/docs), and package as a bundle.
+2. Strip every script tied to the old CMS and its trackers: Facebook Pixel, GTM/GA, Microsoft Clarity, Elementor/Beaver Builder runtime, Gravity Forms, Popup Maker backend calls. Remove the now-dead `<link>` tags pointing at the live wp-content assets.
 3. Re-add the `<link rel="stylesheet" href="style.css">` the bundler doesn't insert automatically.
-4. Rewrite the contact form to post JSON to `https://landrex-web.vercel.app/api/lead` with a honeypot field, instead of the old Gravity Forms action.
-5. Restore any working gallery/carousel with minimal vanilla JS (full Elementor/Swiper runtime isn't needed unless the page has a real multi-image carousel).
-6. Verify: no tracking/CMS leftovers, HTML parses cleanly, screenshot comparison against the live site, test-submit the form with the honeypot filled.
+4. Rewrite the contact form(s) to post JSON to `https://landrex-web.vercel.app/api/lead` with a honeypot field, instead of the old Gravity Forms action.
+5. Restore any working gallery/carousel with minimal vanilla JS. If the page genuinely depends on a JS library (e.g. Slick Carousel + jQuery), self-host that library under `vendor/` instead of pointing at a CDN — more robust for an archival copy, and the bundler snapshot often already has the plugin's generated markup (cloned slides, inline positioning) baked into the DOM, which has to be unwound back to the library's pre-init markup before the page's own init script can run cleanly against it a second time. A true third-party service dependency with no tracking/CMS backend (Google Maps embed, ScrollMagic, Font Awesome's kit loader) is fine to leave as a live CDN/API reference.
+6. Verify: no tracking/CMS leftovers, HTML parses cleanly, zero browser console/page errors, carousels actually paginate, screenshot comparison against the live site, test-submit the form with the honeypot filled.
 
 ## Deployment
 
