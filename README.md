@@ -32,7 +32,7 @@ Each site is a plain static folder at the repo root, deployable as-is (no build 
 | tanglewood-ridge | tanglewoodridge.com | ✅ done, verified against live site |
 | erin-ridge-north | erinridgenorth.ca | ✅ done, verified against live site |
 | ridgeview-at-the-quarry | ridgeviewatthequarry.ca | ✅ done, verified against live site |
-| windsor-pointe | windsorpointe.ca | pending |
+| windsor-pointe | windsorpointe.ca | ✅ done, verified against live site |
 | sherwood-golf-estates | sherwoodestates.ca | pending |
 | east-pine | eastpine.ca | pending |
 | heritage-valley-estates | heritagevalleyestates.ca | pending |
@@ -55,6 +55,8 @@ Documented in full in the Landrex project's `claude/legacy-sites-status.md` doc.
 4. Rewrite the contact form(s) to post JSON to `https://landrex-web.vercel.app/api/lead` with a honeypot field, instead of the old Gravity Forms action.
 5. Restore any working gallery/carousel with minimal vanilla JS. If the page genuinely depends on a JS library (e.g. Slick Carousel + jQuery), self-host that library under `vendor/` instead of pointing at a CDN — more robust for an archival copy, and the bundler snapshot often already has the plugin's generated markup (cloned slides, inline positioning) baked into the DOM, which has to be unwound back to the library's pre-init markup before the page's own init script can run cleanly against it a second time. A true third-party service dependency with no tracking/CMS backend (Google Maps embed, ScrollMagic, Font Awesome's kit loader) is fine to leave as a live CDN/API reference.
 6. Verify: no tracking/CMS leftovers, HTML parses cleanly, zero browser console/page errors, carousels actually paginate, screenshot comparison against the live site, test-submit the form with the honeypot filled.
+
+A CSS file with a *relative* `url(...)` reference (`../img/x.jpg`, `./fonts/y.woff`) needs that path resolved against the stylesheet's own URL, not the page's — and the asset's self-hosted path needs to be written back into the shipped CSS as a full absolute-URL match, not left as the original relative text, or it silently 404s in the browser even though the bundler fetched the right bytes. Caught and fixed in the bundler itself (`scripts/bundler.js`) on Windsor Pointe, where it broke Font Awesome's icon fonts and two background images.
 
 ## Deployment
 
