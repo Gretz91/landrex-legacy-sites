@@ -39,7 +39,7 @@ Each site is a plain static folder at the repo root, deployable as-is (no build 
 | westwinds | westwindsliving.ca | ✅ done, verified against live site |
 | heartland-meadows | theheartlandmeadows.com | ✅ done, verified against live site |
 | fairways-north | fairwaysnorth.com | ✅ done, verified against live site |
-| east-village | east-village.ca | pending |
+| east-village | east-village.ca | ✅ done, verified against live site |
 | urban-district | urbandistrict.ca | pending |
 | mirigal | mirigal.ca | pending |
 
@@ -93,6 +93,11 @@ Fairways North (plain Elementor on "Hello Elementor", same theme family as East 
 - Elementor's native Swiper "Slides" widget hero, same duplicate-slide problem as Ridgeview at the Quarry and Heritage Valley Estates: the captured snapshot had 27 slide divs for 9 real slides (loop-mode clones in `swiper-slide-duplicate`/`-duplicate-prev`/`-duplicate-next`/`-duplicate-active` variants). Rebuilt as the same small vanilla-JS fade carousel used on those two sites, keeping each slide's unique `elementor-repeater-item-<hash>` class (its background image is set via a CSS rule scoped to that class).
 - Two Gravity Forms using the newer "gravity-theme" fieldset markup (same as Heritage Valley Estates): a short newsletter-style signup (First/Last/Email only) and a full contact form (name, phone, email, message, plus a newsletter-consent checkbox). Both rewritten to POST JSON to `/api/lead`, each with its own status element and honeypot field.
 - Elementor's native masonry gallery widget again used the `data-thumbnail` lazy-load pattern (bug 5), already fixed by the standard pre-bundling pre-pass.
+
+East Village (a rental-apartment listing page, same category as East Pine) is the first Divi-theme site on this project — every prior site used Elementor, Beaver Builder, WPBakery, or a custom Foundation theme:
+
+- **Divi's own JS-driven Google Maps module** (`.et_pb_map`, positioned via `data-center-lat`/`-lng`/`-zoom` attributes) is captured already-initialized, the DOM snapshot full of the live Google Maps JS API's own generated UI chrome (zoom buttons, keyboard-shortcut hints). The init code that reads those data attributes and actually builds the map lives in Divi's own frontend bundle, served from the site's own domain and correctly stripped as CMS runtime — left as-is, this would ship a dead, half-rendered map plus several now-pointless `maps.googleapis.com` script tags still being fetched for nothing. Replaced the whole module with a plain Google Maps iframe embed built directly from the data attributes already on the page (the same "legitimate third-party service, no tracking backend" pattern used for every other site's map), and dropped the now-unused Maps JS API script tags.
+- **Mailchimp's own tracking/popup "connected site" loader** (`chimpstatic.com/mcjs-connected/...`) is a new tracker family for this project (previously only Facebook/GTM/GA/Clarity/HubSpot) — added permanently to `clean_site.py`'s strip lists. It's an inline script that builds its own `<script src>` tag at runtime rather than being a plain `<script src=...>` itself, so it needed a body-text substring match, not just a src match. The site's actual lead-capture form (Divi's "Email Optin" newsletter module) is unrelated to this tracking snippet and was rewritten normally to POST JSON to `/api/lead`.
 
 ## Deployment
 
