@@ -31,7 +31,7 @@ Each site is a plain static folder at the repo root, deployable as-is (no build 
 |---|---|---|
 | tanglewood-ridge | tanglewoodridge.com | ✅ done, verified against live site |
 | erin-ridge-north | erinridgenorth.ca | ✅ done, verified against live site |
-| ridgeview-at-the-quarry | ridgeviewatthequarry.ca | pending |
+| ridgeview-at-the-quarry | ridgeviewatthequarry.ca | ✅ done, verified against live site |
 | windsor-pointe | windsorpointe.ca | pending |
 | sherwood-golf-estates | sherwoodestates.ca | pending |
 | east-pine | eastpine.ca | pending |
