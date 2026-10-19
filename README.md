@@ -41,7 +41,7 @@ Each site is a plain static folder at the repo root, deployable as-is (no build 
 | fairways-north | fairwaysnorth.com | ✅ done, verified against live site |
 | east-village | east-village.ca | ✅ done, verified against live site |
 | urban-district | urbandistrict.ca | ✅ done, verified against live site |
-| mirigal | mirigal.ca | pending |
+| mirigal | mirigal.ca | ✅ done, verified against live site |
 
 Excluded: `livefenwyck.com` (owned by Avillia Developments, not Landrex), `mail.theheartlandmeadows.com` (email only), `forestheightsbeaumont.landrex.com` (unreachable/broken, not a live site).
 
@@ -106,6 +106,13 @@ Urban District is the first site on this project that isn't WordPress at all —
 - **A classic inline Universal Analytics bootstrap snippet, invisible to src-substring matching.** The `GoogleAnalyticsObject` async-loader pattern (and a second inline block of `ga('send','event',...)` download/mailto/outbound-link tracking calls) builds its own script tag at runtime rather than being a literal `<script src=...>` itself — same shape of gap as East Village's Mailchimp loader, just a different tracker family. Added `"GoogleAnalyticsObject"`, `"google-analytics.com"`, and `"ga('send'"` to `clean_site.py`'s body-substring strip list permanently.
 - **cycle2's declarative pager needs an existing (if empty) container, not just a template attribute.** The captured markup had a pre-built `.cycle-pager` div (cycle2 populates it from the container's `data-cycle-pager-template` at init, it doesn't create the container itself) plus a duplicate "sentinel" slide image, both runtime artifacts from cycle2 having already run once during capture. Rebuilding the hero required keeping an *empty* pager container (not deleting it, which was the first, broken attempt — cycle2 then has nothing to populate and the pager silently never appears) while stripping the baked sentinel and the runtime inline position/opacity/z-index styles off the three real slides, letting cycle2 build everything fresh on load exactly as it would on the live site's first-ever page visit.
 - No contact form exists on the homepage at all (the real one lives on `/contact.php`), consistent with this project's homepage-only capture convention — nothing to rewrite.
+
+Mirigal (the 13th and final site) is the simplest build on the whole project — a public-engagement page for a proposed neighbourhood (not a lots-for-sale community site), plain Elementor on WordPress's newest default theme (`twentytwentyfive`), no carousel, no native contact form, and no third-party trackers of any kind:
+
+- All lead capture happens through an external Microsoft Forms survey (`forms.cloud.microsoft/...`) and a plain `mailto:` link to the project planner — both genuine third-party/user-agent destinations with nothing to rewire, left as live links exactly as on the live site.
+- Four PDF project-resource documents (figures, the NSP document, engagement boards, a "What We Heard" report) self-hosted under `assets/docs/` using the same Browser-pane-fetch-and-tar pattern as Windsor Pointe's architectural guidelines PDF — these are large (the two biggest are ~24MB each), the biggest asset footprint of any site on this project so far. A fifth resource link (`2026-04-23_Public-Engagement-Plan.pdf`) sits inside an HTML comment on the live page itself (the site's own author disabled it, not yet published) — left as an inert comment, nothing to fetch.
+- The one hero background image is set via an ordinary CSS class rule (`.hero-bg`), not an inline style or a lazy-load attribute — picked up by the bundler's normal CSS-rule scan with zero special handling needed.
+- Playwright verification came back completely clean on the first pass: 0 page errors, only the expected Google Fonts CDN sandbox failure, both survey links and the self-hosted PDF links all present and correctly pointed.
 
 ## Deployment
 
