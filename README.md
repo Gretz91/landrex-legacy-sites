@@ -38,7 +38,7 @@ Each site is a plain static folder at the repo root, deployable as-is (no build 
 | heritage-valley-estates | heritagevalleyestates.ca | ✅ done, verified against live site |
 | westwinds | westwindsliving.ca | ✅ done, verified against live site |
 | heartland-meadows | theheartlandmeadows.com | ✅ done, verified against live site |
-| fairways-north | fairwaysnorth.com | pending |
+| fairways-north | fairwaysnorth.com | ✅ done, verified against live site |
 | east-village | east-village.ca | pending |
 | urban-district | urbandistrict.ca | pending |
 | mirigal | mirigal.ca | pending |
@@ -87,6 +87,12 @@ Heartland Meadows was the most different stack yet on this project: WPBakery Pag
 - **RevSlider's own helper functions (`setREVStartSize`, `revslider_showDoubleJqueryError`) live elsewhere in the document as theme/plugin boilerplate, not next to the widget markup**, and both call the global `jQuery` — stripped as CMS runtime, this threw a `jQuery is not defined` page error the instant the page loaded. Same category of bug as Westwinds' dead carousel-init script, just RevSlider's own library code instead of a theme's carousel init; fixed by dropping both dead script blocks outright, confirmed via Playwright's `pageerror` listener (0 errors after the fix, down from 1).
 - Contact Form 7's reCAPTCHA v3 ("invisible") field was dropped from the rewritten form entirely (same reasoning as Heritage Valley Estates' v2 "bubble" shell), which left two reCAPTCHA loader `<script>` tags and a `.grecaptcha-badge` floating widget fixed to the bottom-right corner, both entirely orphaned — stripped outright, the badge's true matching close found via the project's `find_div_end` balanced-tag depth scanner rather than a guessed fixed-count `</div></div>` (a non-greedy regex attempt failed outright here, since the badge's real structure — a logo `<div>` containing an iframe, an error `<div>`, a hidden `<textarea>`, and a sibling hidden `<iframe>` — doesn't align with where a literal `</div></div>` first appears).
 - `#mortgage_calc_section` and its surviving `mortgage-calculator-js`/`mortgage-calculator-js-extra` script tags are entirely inert on this particular page — a direct DOM query confirmed the section renders as nothing but a static lot-map image, with zero `<input>`/`<select>`/`<button>` elements anywhere in it. Left as dead CMS boilerplate, same "verify the elements actually exist" lesson as Westwinds' dead carousel init.
+
+Fairways North (plain Elementor on "Hello Elementor", same theme family as East Pine) was a comparatively straightforward build, re-confirming two established patterns rather than surfacing new bugs:
+
+- Elementor's native Swiper "Slides" widget hero, same duplicate-slide problem as Ridgeview at the Quarry and Heritage Valley Estates: the captured snapshot had 27 slide divs for 9 real slides (loop-mode clones in `swiper-slide-duplicate`/`-duplicate-prev`/`-duplicate-next`/`-duplicate-active` variants). Rebuilt as the same small vanilla-JS fade carousel used on those two sites, keeping each slide's unique `elementor-repeater-item-<hash>` class (its background image is set via a CSS rule scoped to that class).
+- Two Gravity Forms using the newer "gravity-theme" fieldset markup (same as Heritage Valley Estates): a short newsletter-style signup (First/Last/Email only) and a full contact form (name, phone, email, message, plus a newsletter-consent checkbox). Both rewritten to POST JSON to `/api/lead`, each with its own status element and honeypot field.
+- Elementor's native masonry gallery widget again used the `data-thumbnail` lazy-load pattern (bug 5), already fixed by the standard pre-bundling pre-pass.
 
 ## Deployment
 
