@@ -34,7 +34,7 @@ Each site is a plain static folder at the repo root, deployable as-is (no build 
 | ridgeview-at-the-quarry | ridgeviewatthequarry.ca | ✅ done, verified against live site |
 | windsor-pointe | windsorpointe.ca | ✅ done, verified against live site |
 | sherwood-golf-estates | sherwoodestates.ca | ✅ done, verified against live site |
-| east-pine | eastpine.ca | pending |
+| east-pine | eastpine.ca | ✅ done, verified against live site |
 | heritage-valley-estates | heritagevalleyestates.ca | pending |
 | westwinds | westwindsliving.ca | pending |
 | heartland-meadows | theheartlandmeadows.com | pending |
@@ -62,6 +62,11 @@ Two more generalizable lessons surfaced on Sherwood Golf Estates:
 
 - **Lazy-loaded images can be invisible to the bundler, not just mis-resolved.** Some WordPress lazy-load setups put the real URL in `data-lazy-src`/`data-src` (`<img>`) and `data-lazy-srcset`/`data-srcset` (`<source>`), leaving `src`/`srcset` pointing at a blank placeholder. The bundler's `img[src]` scan never sees the real URL at all. Fix: before calling `__bundleSite`, run a DOM pre-pass that copies `data-lazy-src`/`data-src` into `img.src` and `data-lazy-srcset`/`data-srcset` into `srcset`, for every element that has them — after which the bundler's existing collection logic picks up the real values with no bundler.js changes needed. This has not yet been folded into `bundler.js` as a standing step, so **remember to run it manually on every future site** (any WP site with a lazy-load plugin can hit this).
 - **`rewriteAll()`'s substring replace can "localize" a path that was never fetched.** The bundler never scans `<picture><source srcset>` at all, only `<img src>`. When a registered URL (the `<img>` fallback's `.jpg`/`.png`, which *was* fetched) is a literal text prefix of an unregistered sibling URL elsewhere in the page (a `.jpg.webp`/`.png.webp` variant in a `<source>`, which was *not* fetched), the plain `.split(v).join(local)` substitution still matches inside that longer string — producing a plausible-looking local path (`assets/images/x.jpg.webp`) for a file that doesn't exist on disk. Only caught via Playwright's `requestfailed` listener. Fixed per-site by stripping the orphaned `<source type="image/webp">` tags (the `<img>` fallback already renders correctly); **`bundler.js` itself still needs a permanent fix** — either collect+fetch `srcset` candidates, or make `rewriteAll` collision-safe against prefix matches — before the next `<picture>`/webp site.
+
+East Pine (a different stack entirely — plain Elementor/Hello Elementor, no Gravity Forms, no Slick/Swiper) surfaced one more variant of the same family of bugs:
+
+- **Elementor's own gallery widget lazy-loads background images via a `data-thumbnail` attribute + an IntersectionObserver, not `data-lazy-src`.** The bundler's `img[src]`/`[style*=background]` scans only see what's already in the DOM at snapshot time; a `.e-gallery-image` div with `class="...e-gallery--lazyload"` has no `style` attribute at all until it scrolls into view. Fix: before bundling, force-set the inline style directly from the known attribute (`el.style.backgroundImage = \`url("${el.dataset.thumbnail}")\``) rather than relying on scrolling to trigger the observer (scrolling worked for only 11/12 items in testing — one straggler never fired). This is the same *shape* of bug as Sherwood's `data-lazy-src` (a real URL sitting in a non-standard attribute, invisible to the bundler's fixed scan list) but a different attribute name and a different triggering mechanism (CSS lazy-load via observer, not swapped `src`) — confirms this is a recurring category (**check any lazy-loading site for where the real URL actually lives**, not just the two known attribute names) rather than a one-off.
+- One gallery image (`DSCF8420`) was already 404ing on the **live site itself** (confirmed via direct fetch to both its thumbnail and full-size URLs returning 404 pre-bundling) — not a bundler or archival-copy bug, just a dead upload on the original WordPress site. Left as-is; the archival copy faithfully reproduces the same broken thumbnail the live site shows.
 
 ## Deployment
 
