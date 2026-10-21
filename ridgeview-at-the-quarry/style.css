@@ -3859,3 +3859,10 @@ html[dir="rtl"] .gform-theme--api, html[dir="rtl"] .gform-theme--framework { --g
 .gform-theme--framework .gform_required_legend .gfield_required { color: var(--gf-color-danger); }
 .gform-theme--framework .gfield_list_group_item::before, .gform-theme--framework .gform-field-label:where(:not([class*="gform-field-label--type-"])) { --gf-local-margin-y: 0 var(--gf-label-space-primary); }
 .gform-theme--framework .field_sublabel_below .gform-field-label--type-sub { --gf-local-margin-y: var(--gf-label-space-tertiary) 0; }
+
+/*
+  This is a static archival copy with no JavaScript, so Elementor's
+  scroll-triggered entrance animations never fire and leave this button
+  permanently hidden (visibility: hidden) instead of fading in. Show it.
+*/
+.elementor-invisible { visibility: visible !important; }

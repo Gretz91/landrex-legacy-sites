@@ -556,3 +556,12 @@ footer { flex-direction: column; gap: 12px; text-align: center; padding: 24px; }
 .footer-right { align-items: center; }
 
 }
+
+/*
+  This is a static archival copy with no JavaScript, so the scroll-triggered
+  reveal (a JS-added class was meant to flip these from opacity:0 to visible)
+  never fires, and most of the page below the hero — intro, plan cards, "why"
+  cards, resource/PDF links, feedback section and the engagement timeline —
+  stays invisible forever. Show it immediately instead.
+*/
+.reveal, .tl-item { opacity: 1 !important; transform: none !important; }
