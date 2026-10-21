@@ -4878,4 +4878,12 @@ body.et_button_custom_icon #page-container .et_pb_button_2::after { font-size: 2
 :root { --wp--preset--font-size--normal: 16px; --wp--preset--font-size--huge: 42px; }
 html :where([style^="border-color"], [style*=";border-color"], [style*="; border-color"]) { border-style: solid; }
 html :where([style^="border-width"], [style*=";border-width"], [style*="; border-width"]) { border-style: solid; }
+
+/*
+  This is a static archival copy with no JavaScript, so Divi's scroll-triggered
+  reveal animations never fire and these sections/images stay at their
+  pre-animation state (opacity: 0) forever, which looks like blank space.
+  Show them immediately instead of animating them in.
+*/
+.et_animated, .et-waypoint { opacity: 1 !important; }
 html :where(img[class*="wp-image-"]) { height: auto; max-width: 100%; }
