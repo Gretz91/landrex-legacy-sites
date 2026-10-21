@@ -831,7 +831,7 @@ jQuery(function($){
         source: 'sherwoodestates.ca (archival copy)'
       };
       if (status) status.textContent = 'Sending\u2026';
-      fetch('https://landrex-web.vercel.app/api/lead', {
+      fetch('about:blank', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -847,4 +847,6 @@ jQuery(function($){
   wireLeadForm('sherwoodInquiryForm', '.sherwoodInquiryStatus', 'Sherwood Golf Estates');
 });
 </script>
+<div id="snapshot-notice" style="position:fixed;left:0;right:0;bottom:0;z-index:2147483647;background:#111;color:#fff;font:14px/1.4 system-ui,sans-serif;padding:10px 16px;text-align:center">This is an offline snapshot of a Landrex website, not the live site. Availability and contact details may be out of date. <a href="https://sherwoodestates.ca" style="color:#fff;text-decoration:underline;font-weight:bold">Go to the live website</a></div>
+<script>document.addEventListener("submit",function(e){e.preventDefault();e.stopImmediatePropagation();alert("This is a snapshot copy, so forms are turned off. Please use the live Landrex website to get in touch.");},true);</script>
 </body></html>

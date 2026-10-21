@@ -1,12 +1,14 @@
-# Landrex legacy sites
+# Landrex site snapshots (repo name: landrex-legacy-sites)
+
+> **CORRECTION 2026-10-21:** these are homepage-only backup snapshots of sites that are **live and selling**. They are not legacy or retired. Never link visitors here, and never repoint, CNAME or redirect a real domain to this project. Pages are noindexed, carry a "not the live site" banner, and forms are disabled. See the Landrex Project doc `claude/legacy-sites-status.md`.
 
 Near-pixel-faithful archival copies of Landrex's old WordPress/Elementor microsites, built as plain static HTML/CSS. This is a **separate, parallel effort** from the main [landrex-web](https://github.com/Gretz91/landrex-web) consolidated site — not a redesign, not folded into that build.
 
 ## Why this exists
 
-- The new landrex-web site's outbound links will point here instead of at the real external domains (e.g. tanglewoodridge.com).
-- The old domains are meant to eventually CNAME/redirect here too.
-- Each copy keeps working forms (routed to landrex-web's `/api/lead`, CORS-allowlisted) and working image galleries/carousels, but drops Facebook Pixel/GTM tracking and the live WordPress/Elementor/Gravity Forms backend these pages used to depend on.
+- A private backup of each microsite homepage and source material for the consolidated landrex-web concept.
+- The earlier plan to point landrex-web links and the real domains here is cancelled. landrex-web links to the real live sites.
+- Forms are disabled (they used to post to landrex-web `/api/lead`, which emails Jeff, not sales).
 
 ## Structure
 
